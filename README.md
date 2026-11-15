@@ -1,8 +1,10 @@
 # ORCA
 
-ORCA wraps Alibaba's OpenCode Review (`ocr`) CLI. It captures OCR output without printing it, then appends only issue blocks and the final project summary to the nearest `RECAP.md`.
+ORCA wraps Alibaba's OpenCode Review (`ocr`) CLI. It captures OCR output without printing it, then replaces the nearest `RECAP.md` with only issue blocks and the final project summary.
 
-For `orca scan`, ORCA shows a spinner with `orca is scanning...` and a completion summary. No findings means no recap write.
+ORCA shows `orca is reviewing...` during reviews and `orca is scanning...` during scans. Utility commands and `session list` show no spinner. Session-list output stays visible and does not change the recap. `delegate` is rejected by ORCA without invoking OCR.
+
+After successful recap replacement, ORCA prints a command-specific completion message with captured finding count. Successful `review` and `scan` commands replace the first `RECAP.md` found walking upward from the current directory. OCR text output and JSON written with `--output` are captured (`--output -` uses captured stdout); JSON and SARIF findings are normalized into the recap format, and the output file remains untouched. Successful no-finding runs clear the recap. OCR failures or unreadable output files preserve it. Ctrl+C stops OCR and returns 130.
 
 ## Requirements
 
@@ -24,4 +26,4 @@ orca review --from main
 orca scan --path src
 ```
 
-OCR's exit status passes through. For scans, ORCA writes only captured issue findings and the final project summary to the first `RECAP.md` found walking upward from the current directory. If none exists, ORCA leaves recap files untouched.
+OCR's exit status passes through. OCR output stays hidden except `session list`; utility commands other than `delegate` are forwarded unchanged.

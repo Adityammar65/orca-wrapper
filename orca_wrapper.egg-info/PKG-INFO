@@ -1,0 +1,49 @@
+Metadata-Version: 2.4
+Name: orca-wrapper
+Version: 0.1.0
+Summary: Lightweight CLI wrapper for Alibaba's OpenCode Review (OCR) tool
+Author: ORCA Contributors
+License: MIT
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+
+# ORCA
+
+ORCA wraps Alibaba's OpenCode Review (`ocr`) CLI. It captures OCR output without printing it, then replaces the nearest `RECAP.md` with only issue blocks and the final project summary.
+
+ORCA shows `orca is reviewing...` during reviews and `orca is scanning...` during scans. Utility commands and `session list` show no spinner. Session-list output stays visible and does not change the recap. `delegate` is rejected by ORCA without invoking OCR.
+
+After successful recap replacement, ORCA prints a command-specific completion message with captured finding count. Successful `review` and `scan` commands replace the first `RECAP.md` found walking upward from the current directory. OCR text output and JSON written with `--output` are captured (`--output -` uses captured stdout); JSON and SARIF findings are normalized into the recap format, and the output file remains untouched. Successful no-finding runs clear the recap. OCR failures or unreadable output files preserve it. Ctrl+C stops OCR and returns 130.
+
+## Requirements
+
+- Python 3.8 or newer
+- OpenCode Review installed, with `ocr` available on `PATH`
+
+## Install
+
+```sh
+python -m pip install .
+```
+
+## Usage
+
+Use `orca` anywhere you would use `ocr`:
+
+```sh
+orca review --from main
+orca scan --path src
+```
+
+OCR's exit status passes through. OCR output stays hidden except `session list`; utility commands other than `delegate` are forwarded unchanged.
